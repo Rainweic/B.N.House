@@ -10,3 +10,10 @@ while True:
     observation, reward, done, info = env.step(action)  # 执行动作并获取反馈
     if done:  # 游戏结束
         break
+    
+    # 显示游戏画面
+    env.render()
+    
+
+# 关闭环境
+env.close()
