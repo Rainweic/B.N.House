@@ -59,7 +59,7 @@ def train(args):
     # GPU or CPU
     use_cuda = torch.cuda.is_available()
     if use_cuda:
-        model.to("gpu")
+        model = model.to("cuda")
 
     # Optimizer
     optim = OPTIMIZER[config.optimizer](model.parameters(), lr=config.lr)
@@ -95,23 +95,23 @@ def train(args):
         return mean_rewards >= tmp_env.spec.reward_threshold
 
     def train_fn(epoch, env_step):  # exp decay
-        eps = max(args.eps_train * (1 - 5e-6) ** env_step, args.eps_test)
+        eps = max(config.eps_train * (1 - 5e-6) ** env_step, config.eps_test)
         policy.set_eps(eps)
 
     def test_fn(epoch, env_step):
-        policy.set_eps(args.eps_test)
+        policy.set_eps(config.eps_test)
 
     # trainer
     result = OffpolicyTrainer(
         policy=policy,
         train_collector=train_collector,
         test_collector=test_collector,
-        max_epoch=args.epoch,
-        step_per_epoch=args.step_per_epoch,
-        step_per_collect=args.step_per_collect,
-        episode_per_test=args.test_num,
-        batch_size=args.batch_size,
-        update_per_step=args.update_per_step,
+        max_epoch=config.epoch,
+        step_per_epoch=config.step_per_epoch,
+        step_per_collect=config.step_per_collect,
+        episode_per_test=config.test_num,
+        batch_size=config.batch_size,
+        update_per_step=config.update_per_step,
         stop_fn=stop_fn,
         train_fn=train_fn,
         test_fn=test_fn,
