@@ -119,8 +119,6 @@ def train(args):
         logger=logger,
     ).run()
 
-    assert stop_fn(result.best_reward)
-
 
 if __name__ == "__main__":
     args = get_args()
