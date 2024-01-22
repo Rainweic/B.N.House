@@ -13,11 +13,14 @@ from model_zoo import MODEL_ZOO
 from policy_zoo import POLICY_ZOO
 
 
-def test():
+def test(args):
     
     config = read_config(args.c)
     
     test_env = gym.make(config.env_name)
+    
+    config.state_shape = test_env.observation_space.shape or test_env.observation_space.n
+    config.action_shape = test_env.action_space.shape or test_env.action_space.n
     
     # Model
     model = MODEL_ZOO[config.model](config=config)
@@ -57,6 +60,7 @@ def test():
         obs, reward, terminated, truncated, info = test_env.step(act)
 
         if terminated or truncated:
+            print("end")
             break
 
         act = policy(Batch(obs=obs[np.newaxis, :], info={})).act.item()
