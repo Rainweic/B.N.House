@@ -1,5 +1,4 @@
 import os
-import argparse
 
 import gymnasium as gym
 import numpy as np
@@ -12,20 +11,10 @@ from tianshou.trainer import OffpolicyTrainer
 from tianshou.policy import BasePolicy
 from tianshou.data.batch import Batch
 
+from common import get_args, OPTIMIZER
 from configs import read_config
 from model_zoo import MODEL_ZOO
 from policy_zoo import POLICY_ZOO
-
-
-OPTIMIZER = {
-    "Adam": torch.optim.Adam
-}
-
-
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-c", type=str, help="path of config file", default="./configs/dqn_lunarlander.json")
-    return parser.parse_args()
 
 
 def train(args):
