@@ -59,18 +59,17 @@ def test(args):
 
     obs, info = test_env.reset()
 
-    act = policy(Batch(obs=obs[np.newaxis, :], info={})).act.item()
-    act = policy.map_action(act)
-
     while True:
+        
+        act = policy(Batch(obs=obs[np.newaxis, :], info={})).act.item()
+        act = policy.map_action(act)
+        
         obs, reward, terminated, truncated, info = test_env.step(act)
+        print(f"act: {act}, reward: {reward}")
 
         if terminated or truncated:
             print("end")
             break
-
-        act = policy(Batch(obs=obs[np.newaxis, :], info={})).act.item()
-        act = policy.map_action(act)
 
     test_env.close()
     
