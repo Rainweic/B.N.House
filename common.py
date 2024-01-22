@@ -2,6 +2,9 @@ import torch
 import argparse
 
 
+LOG_PATH = "./log"
+
+
 OPTIMIZER = {
     "Adam": torch.optim.Adam
 }

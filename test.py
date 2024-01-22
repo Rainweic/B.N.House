@@ -8,7 +8,7 @@ from configs import read_config
 from tianshou.policy import BasePolicy
 from tianshou.data import Batch
 
-from common import OPTIMIZER
+from common import OPTIMIZER, LOG_PATH
 from model_zoo import MODEL_ZOO
 from policy_zoo import POLICY_ZOO
 
@@ -48,8 +48,14 @@ def test(args):
             save_name = config.save_model_name
     else:
         save_name = "policy.pth"
-    log_path = os.path.join("./logs", config.env_name, config.model)
+    log_path = os.path.join(LOG_PATH, config.env_name, config.model)
+    
     policy.load_state_dict(torch.load(os.path.join(log_path, save_name)))
+    
+    policy.eval()
+    
+    if hasattr(policy, "eps_test"):
+        policy.set_eps(config.eps_test)
 
     obs, info = test_env.reset()
 

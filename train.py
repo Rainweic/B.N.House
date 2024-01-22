@@ -11,10 +11,11 @@ from tianshou.trainer import OffpolicyTrainer
 from tianshou.policy import BasePolicy
 from tianshou.data.batch import Batch
 
-from common import get_args, OPTIMIZER
+from common import get_args, OPTIMIZER, LOG_PATH
 from configs import read_config
 from model_zoo import MODEL_ZOO
 from policy_zoo import POLICY_ZOO
+from test import test
 
 
 def train(args):
@@ -75,7 +76,7 @@ def train(args):
     test_collector = Collector(policy, eval_envs, exploration_noise=True)
 
     # Log
-    log_path = os.path.join("./logs", config.env_name, config.model)
+    log_path = os.path.join(LOG_PATH, config.env_name, config.model)
     writer = SummaryWriter(log_path)
     logger = TensorboardLogger(writer)
 
@@ -113,32 +114,11 @@ def train(args):
         save_best_fn=save_best_fn,
         logger=logger,
     ).run()
+    
+    print(result)
 
     # test
-    if stop_fn(result.get("best_reward")):
-
-        if hasattr(config, "save_model_name"):
-            save_name = config.save_model_name
-        else:
-            save_name = "policy.pth"
-        policy.load_state_dict(torch.load(os.path.join(log_path, save_name)))
-
-        test_env = gym.make(config.env_name)
-        obs, info = test_env.reset()
-
-        act = policy(Batch(obs=obs[np.newaxis, :], info={})).act.item()
-        act = policy.map_action(act)
-
-        while True:
-            obs, reward, terminated, truncated, info = test_env.step(act)
-
-            if terminated or truncated:
-                break
-
-            act = policy(Batch(obs=obs[np.newaxis, :], info={})).act.item()
-            act = policy.map_action(act)
-
-        test_env.close()
+    test(args)
 
 
 if __name__ == "__main__":
