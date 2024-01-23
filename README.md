@@ -6,8 +6,7 @@ Banknote House【纸钞屋】
 
 存放路径: `configs`
 
-
-## Dev 0.0.1版本说明
+## V0.0.1版本说明
 
 ### 运行demo 【DQN网络 登月游戏】
 
