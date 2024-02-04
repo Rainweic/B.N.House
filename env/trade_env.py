@@ -4,6 +4,7 @@ import numpy as np
 from enum import Enum
 from gymnasium import Env
 from gymnasium import spaces
+from gymnasium.envs.registration import register
 from mongoengine import *
 from models import *
 
@@ -148,6 +149,9 @@ class TradeEnv(Env):
         info = self._get_info()
 
         return observation, reward, False, self.truncated, info
+
+
+register(id="trade", entry_point="envs.trade_env:TradeEnv")
 
 
 # test
