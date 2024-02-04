@@ -1,5 +1,6 @@
 import random
 import numpy as np
+import gymnasium as gym
 
 from enum import Enum
 from gymnasium import Env
@@ -156,7 +157,7 @@ register(id="trade", entry_point="envs.trade_env:TradeEnv")
 
 # test
 if __name__ == "__main__":
-    env = TradeEnv(cat='AU', feed_data_length=5, start_time='20180524', end_time='20221230',
+    env = gym.make(id='trade', cat='AU', feed_data_length=5, start_time='20180524', end_time='20221230',
                    stop_loss_th_init=0.0025, multiplier=500)
     env.reset()
     while True:
