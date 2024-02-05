@@ -18,13 +18,13 @@ from quant_trading.models import PickleDbTicks
 warnings.filterwarnings("ignore")
 
 
-DROP_COLS = [
-        'InstrumentID', 'MarketID', 'mainID',
-        # 'AskPrice2', 'AskPrice3', 'AskPrice4', 'AskPrice5',
-        # 'AskVolume2', 'AskVolume3', 'AskVolume4', 'AskVolume5',
-        'BidPrice2', 'BidPrice3', 'BidPrice4', 'BidPrice5',
-        'BidVolume2', 'BidVolume3', 'BidVolume4', 'BidVolume5',
-    ]
+SEL_COLS = ['LastPrice', 'LastVolume',
+            'AskPrice1', 'AskVolume1', 'BidPrice1', 'BidVolume1',
+            'AskPrice2', 'AskVolume2', 'BidPrice2', 'BidVolume2',
+            'AskPrice3', 'AskVolume3', 'BidPrice3', 'BidVolume3',
+            'AskPrice4', 'AskVolume4', 'BidPrice4', 'BidVolume4',
+            'AskPrice5', 'AskVolume5', 'BidPrice5', 'BidVolume5'
+            ]
 INF = 1e10
 
 
@@ -89,7 +89,7 @@ class TradeEnv(Env):
         # 加载数据
         ticks = PickleDbTicks(dict(category=self.cat, subID='9999', day__in=sel_days), main_cls='')
         df = ticks.load_ticks()
-        df = df.drop(DROP_COLS, axis=1)
+        df = df[SEL_COLS]
         df = df.reset_index(drop=True)
 
         # night数据是分开两天存储的
