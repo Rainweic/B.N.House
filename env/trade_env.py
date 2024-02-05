@@ -1,4 +1,5 @@
 import random
+import warnings
 import numpy as np
 import gymnasium as gym
 
@@ -12,6 +13,9 @@ from models import *
 from env.core import calc_reward
 
 
+warnings.filterwarnings("ignore")
+
+
 DROP_COLS = [
         'InstrumentID', 'MarketID', 'mainID',
         # 'AskPrice2', 'AskPrice3', 'AskPrice4', 'AskPrice5',
@@ -19,6 +23,7 @@ DROP_COLS = [
         'BidPrice2', 'BidPrice3', 'BidPrice4', 'BidPrice5',
         'BidVolume2', 'BidVolume3', 'BidVolume4', 'BidVolume5',
     ]
+INF = 1e10
 
 
 class Actions(Enum):
@@ -52,11 +57,10 @@ class TradeEnv(Env):
 
         # 定义space
         self.action_space = spaces.Discrete(len(Actions))
-        INF = 1e10
+        self.observation_shape = (feed_data_length, len(self.df.columns))
         self.observation_space = spaces.Box(
             low=-INF, high=INF, shape=self.observation_shape, dtype=np.float32
         )
-        self.observation_shape = (feed_data_length, len(self.df.columns))
 
     def _get_observation(self):
         return self.df.iloc[self.sel_point-self.feed_data_length:self.sel_point]
@@ -157,12 +161,13 @@ register(id="trade", entry_point="env.trade_env:TradeEnv")
 
 # test
 if __name__ == "__main__":
-    env = gym.make(id='trade', cat='AU', feed_data_length=5, start_time='20180524', end_time='20221230',
+    env = gym.make(id='trade', cat='AU', feed_data_length=5, start_time='20220524', end_time='20221230',
                    stop_loss_th_init=0.0025, multiplier=500)
     env.reset()
     while True:
         action = env.action_space.sample()
         observation, reward, terminated, truncated, info = env.step(action)
+        print(f"obs: {observation}\n reward: {reward}")
 
         if terminated or truncated:
             observation, info = env.reset()
