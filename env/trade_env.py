@@ -6,7 +6,7 @@ from enum import Enum
 from gymnasium import Env
 from gymnasium import spaces
 from gymnasium.envs.registration import register
-from mongoengine import *
+from mongoengine import connect
 from models import *
 
 from env.core import calc_reward
@@ -152,7 +152,7 @@ class TradeEnv(Env):
         return observation, reward, False, self.truncated, info
 
 
-register(id="trade", entry_point="envs.trade_env:TradeEnv")
+register(id="trade", entry_point="env.trade_env:TradeEnv")
 
 
 # test
