@@ -65,7 +65,7 @@ class TradeEnv(Env):
         )
 
     def _get_observation(self):
-        return self.df.iloc[self.sel_point-self.feed_data_length:self.sel_point]
+        return self.df.loc[self.sel_point-self.feed_data_length:self.sel_point, SEL_COLS]
 
     def _get_info(self):
         return dict(
@@ -89,7 +89,6 @@ class TradeEnv(Env):
         # 加载数据
         ticks = PickleDbTicks(dict(category=self.cat, subID='9999', day__in=sel_days), main_cls='')
         df = ticks.load_ticks()
-        df = df[SEL_COLS]
         df = df.reset_index(drop=True)
 
         # night数据是分开两天存储的
