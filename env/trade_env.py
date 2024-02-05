@@ -10,9 +10,9 @@ from gymnasium import spaces
 from gymnasium.envs.registration import register
 from datetime import datetime
 from mongoengine import connect
-from models import *
 
 from env.core import calc_reward
+from quant_trading.models import PickleDbTicks
 
 
 warnings.filterwarnings("ignore")
@@ -82,15 +82,9 @@ class TradeEnv(Env):
 
     def _load_data(self):
 
-        # 加载日期
-        # ticks = PickleDbTicks(dict(category=self.cat, subID='9999'), main_cls='')
-        # all_days = ticks.ticks.distinct('day')
-        # all_days = sorted(all_days)
-        # start_time_idx = all_days.index(self.start_time)
-        # end_time_idx = all_days.index(self.end_time)
-        # sel_days = all_days[start_time_idx:end_time_idx]
-
-        sel_days = [datetime.strftime(x, '%Y%m%d') for x in list(pd.date_range(start=self.start_time, end=self.end_time))]
+        # 根据日期选择数据
+        sel_days = [datetime.strftime(x, '%Y%m%d') for x in
+                    list(pd.date_range(start=self.start_time, end=self.end_time))]
 
         # 加载数据
         ticks = PickleDbTicks(dict(category=self.cat, subID='9999', day__in=sel_days), main_cls='')

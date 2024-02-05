@@ -32,7 +32,7 @@ def random_load_data(cat):
     # sel_day = random.choice(all_days)
     sel_day_idx = random.randint(0, len(all_days)-2)
     sel_day = all_days[sel_day_idx:sel_day_idx+2]
-    
+
     # 加载数据
     ticks = PickleDbTicks(dict(category=cat, subID='9999', day__in=sel_day), main_cls='')
     df = ticks.load_ticks()
@@ -109,7 +109,7 @@ def calc_reward(df_op, op_type, stop_loss_th, multiplier):
 
 
 def random_load_data_calc_reward(cat, pre_seq_len, multiplier, stop_loss_th_init):
-    
+
     df, sel_day, t_type = random_load_data(cat)
 
     # 随机找一个合适的点
