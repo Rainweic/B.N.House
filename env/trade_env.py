@@ -65,7 +65,7 @@ class TradeEnv(Env):
         )
 
     def _get_observation(self):
-        return self.df.loc[self.sel_point-self.feed_data_length:self.sel_point, SEL_COLS]
+        return self.df.iloc[self.sel_point-self.feed_data_length:self.sel_point][SEL_COLS]
 
     def _get_info(self):
         return dict(
