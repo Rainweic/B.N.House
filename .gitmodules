@@ -1,0 +1,3 @@
+[submodule "quant_trading"]
+	path = quant_trading
+	url = https://github.com/DonYum/quant_trading.git

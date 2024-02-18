@@ -9,7 +9,6 @@ from torch.utils.tensorboard import SummaryWriter
 from tianshou.utils import TensorboardLogger
 from tianshou.trainer import OffpolicyTrainer
 from tianshou.policy import BasePolicy
-from tianshou.data.batch import Batch
 
 from common import get_args, OPTIMIZER, LOG_PATH
 from configs import read_config
@@ -114,7 +113,7 @@ def train(args):
         save_best_fn=save_best_fn,
         logger=logger,
     ).run()
-    
+
     print(result)
 
     # test

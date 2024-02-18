@@ -2,12 +2,20 @@
 
 Banknote House【纸钞屋】
 
+#### Clone
+
+```bash
+git clone https://github.com/Rainweic/B.N.House.git
+git submodule init
+git submodule update
+```
+
+
 ## 配置文件
 
 存放路径: `configs`
 
-
-## Dev 0.0.1版本说明
+## V0.0.1版本说明
 
 ### 运行demo 【DQN网络 登月游戏】
 
