@@ -18,6 +18,9 @@ from quant_trading.models import PickleDbTicks
 warnings.filterwarnings("ignore")
 
 
+__all__ = ["TradeEnv", "SEL_COLS"]
+
+
 SEL_COLS = ['LastPrice', 'LastVolume',
             'AskPrice1', 'AskVolume1', 'BidPrice1', 'BidVolume1',
             'AskPrice2', 'AskVolume2', 'BidPrice2', 'BidVolume2',
