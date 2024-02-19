@@ -41,7 +41,8 @@ class TradeEnv(Env):
     metadata = {"render_modes": ["ansi"]}
 
     def __init__(self, cat, timestep, start_time, end_time, stop_loss_th_init, multiplier,
-                 time_type='random', URI_ticks='mongodb://ticks:11112222@mongodb:27017/ticks'):
+                 time_type='random', URI_ticks='mongodb://ticks:11112222@mongodb:27017/ticks',
+                 use_fake_data=False):
         super().__init__()
 
         # 连接数据库
@@ -56,6 +57,7 @@ class TradeEnv(Env):
         self.stop_loss_th_init = stop_loss_th_init
         self.multiplier = multiplier
         self.time_type = time_type
+        self.use_fake_data = use_fake_data
 
         # 加载数据
         self.df = self._load_data()
@@ -88,6 +90,11 @@ class TradeEnv(Env):
         # 根据日期选择数据
         sel_days = [datetime.strftime(x, '%Y%m%d') for x in
                     list(pd.date_range(start=self.start_time, end=self.end_time))]
+
+        if self.use_fake_data:
+            # 随机生成数据 仅用于测试
+            df = pd.DataFrame(np.random.rand(len(sel_days), len(SEL_COLS)), columns=SEL_COLS)
+            return df
 
         # 加载数据
         ticks = PickleDbTicks(dict(category=self.cat, subID='9999', day__in=sel_days), main_cls='')
@@ -162,7 +169,7 @@ register(id="trade", entry_point="env.trade_env:TradeEnv")
 # test
 if __name__ == "__main__":
     env = gym.make(id='trade', cat='AU', timestep=5, start_time='20220524', end_time='20221230',
-                   stop_loss_th_init=0.0025, multiplier=500)
+                   stop_loss_th_init=0.0025, multiplier=500, use_fake_data=True)
     env.reset()
     while True:
         action = env.action_space.sample()
