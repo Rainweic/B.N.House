@@ -48,7 +48,8 @@ class TradeEnv(Env):
         # 连接数据库
         # URI_ticks = 'mongodb://ticks:11112222@mongodb:27017/ticks'
         # URI_kline = 'mongodb://127.0.0.1:6007/kline'
-        connect(host=URI_ticks,  alias='ticks')
+        if not use_fake_data:
+            connect(host=URI_ticks,  alias='ticks')
 
         self.cat = cat
         self.timestep = timestep
