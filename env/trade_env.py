@@ -41,11 +41,11 @@ class TradeEnv(Env):
     metadata = {"render_modes": ["ansi"]}
 
     def __init__(self, cat, timestep, start_time, end_time, stop_loss_th_init, multiplier,
-                 time_type='random'):
+                 time_type='random', URI_ticks='mongodb://ticks:11112222@mongodb:27017/ticks'):
         super().__init__()
 
         # 连接数据库
-        URI_ticks = 'mongodb://ticks:11112222@mongodb:27017/ticks'
+        # URI_ticks = 'mongodb://ticks:11112222@mongodb:27017/ticks'
         # URI_kline = 'mongodb://127.0.0.1:6007/kline'
         connect(host=URI_ticks,  alias='ticks')
 

@@ -6,7 +6,8 @@
     "start_time": "20220524",
     "end_time": "20220525",
     "stop_loss_th_init": 0.0025,
-    "multiplier": 500
+    "multiplier": 500,
+    "URI_ticks": "mongodb://ticks:11112222@192.168.3.47:27017/ticks"
   },
   "model": "RainBow4Trade",
   "model_kwargs": {
