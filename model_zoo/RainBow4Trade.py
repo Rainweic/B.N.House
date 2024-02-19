@@ -21,6 +21,8 @@ class RainBow4Trade(nn.Module):
         state: Any = None,
         info: Dict[str, Any] = {},
     ) -> Tuple[torch.Tensor, Any]:
+        # bug timestep咋会是2
+        print(obs.shape)
         output, _ = self.gru(obs)
         output = self.fc(output[:, -1, :])
 
@@ -31,8 +33,14 @@ class RainBow4Trade(nn.Module):
 
 # test the model
 if __name__ == '__main__':
-    model = RainBow4Trade(10, 5, 1)
-    obs = torch.randn(3, 5, 10)
+
+    bs = 100
+    feature_size = 22
+    timestep = 5
+    output_size = 2
+
+    model = RainBow4Trade(feature_size=feature_size, timestep=timestep, output_size=output_size)
+    obs = torch.randn(bs, timestep, feature_size)
     output, _ = model(obs)
     print(output.shape)
     print(output)

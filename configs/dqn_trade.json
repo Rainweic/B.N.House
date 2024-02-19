@@ -7,7 +7,8 @@
     "end_time": "20220525",
     "stop_loss_th_init": 0.0025,
     "multiplier": 500,
-    "URI_ticks": "mongodb://ticks:11112222@192.168.3.47:27017/ticks"
+    "URI_ticks": "mongodb://ticks:11112222@192.168.3.47:27017/ticks",
+    "use_fake_data": true
   },
   "model": "RainBow4Trade",
   "model_kwargs": {
@@ -32,7 +33,7 @@
   "step_per_collect": 16,
   "update_per_step": 0.0625,
   "batch_size": 128,
-  "training_num": 16,
-  "test_num": 100,
+  "training_num": 1,
+  "test_num": 1,
   "render": 0.0
 }

@@ -15,6 +15,7 @@ from configs import read_config
 from model_zoo import MODEL_ZOO
 from policy_zoo import POLICY_ZOO
 from test import test
+from env.trade_env import *
 
 
 def train(args):
@@ -22,20 +23,23 @@ def train(args):
     config = read_config(args.c)
 
     # set state_shape、action_shape
-    tmp_env = gym.make(config.env_kwargs.__dict__)
+    env_kwargs = config.env_kwargs.__dict__
+    print(f"env_kwargs:\n{env_kwargs}")
+    
+    tmp_env = gym.make(**env_kwargs)
     config.state_shape = tmp_env.observation_space.shape or tmp_env.observation_space.n
     config.action_shape = tmp_env.action_space.shape or tmp_env.action_space.n
 
     # make train/test env
     if hasattr(config, "training_num"):
-        train_envs = DummyVectorEnv([lambda: gym.make(config.env_kwargs.__dict__) for _ in range(config.training_num)])
+        train_envs = DummyVectorEnv([lambda: gym.make(**env_kwargs) for _ in range(config.training_num)])
     else:
-        train_envs = gym.make(config.env_kwargs.__dict__)
+        train_envs = gym.make(**env_kwargs)
 
     if hasattr(config, "test_num"):
-        eval_envs = SubprocVectorEnv([lambda: gym.make(config.env_kwargs.__dict__) for _ in range(config.test_num)])
+        eval_envs = SubprocVectorEnv([lambda: gym.make(**env_kwargs) for _ in range(config.test_num)])
     else:
-        eval_envs = gym.make(config.env_kwargs.__dict__)
+        eval_envs = gym.make(**env_kwargs)
 
     # set seed
     if hasattr(config, "random_seed"):
@@ -47,10 +51,12 @@ def train(args):
     # Model
     if hasattr(config, "model_kwargs"):
         if config.model_kwargs.feature_size == "state_shape":
-            config.model_kwargs.feature_size = config.state_shape
-        if config.model_kwargs.action_shape == "action_shape":
-            config.model_kwargs.action_shape = config.action_shape
-        model = MODEL_ZOO[config.model](**config.model_kwargs.__dict__)
+            config.model_kwargs.feature_size = config.state_shape[-1]
+        if config.model_kwargs.output_size == "action_shape":
+            config.model_kwargs.output_size = config.action_shape
+        model_kwargs = config.model_kwargs.__dict__
+        print(f"model_kwargs:\n{model_kwargs}")
+        model = MODEL_ZOO[config.model](**model_kwargs)
     else:
         model = MODEL_ZOO[config.model](config=config)
 
@@ -76,13 +82,13 @@ def train(args):
     train_collector = Collector(
         policy,
         train_envs,
-        VectorReplayBuffer(config.buffer_size, len(train_envs)),
+        VectorReplayBuffer(config.buffer_size, len(train_envs) if isinstance(train_envs, SubprocVectorEnv) else 1),
         exploration_noise=True,
     )
     test_collector = Collector(policy, eval_envs, exploration_noise=True)
 
     # Log
-    log_path = os.path.join(LOG_PATH, config.env_name, config.model)
+    log_path = os.path.join(LOG_PATH, config.env_kwargs.id, config.model)
     writer = SummaryWriter(log_path)
     logger = TensorboardLogger(writer)
 

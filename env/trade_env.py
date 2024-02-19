@@ -42,7 +42,7 @@ class TradeEnv(Env):
 
     def __init__(self, cat, timestep, start_time, end_time, stop_loss_th_init, multiplier,
                  time_type='random', URI_ticks='mongodb://ticks:11112222@mongodb:27017/ticks',
-                 use_fake_data=False):
+                 use_fake_data=False, seed=0):
         super().__init__()
 
         # 连接数据库
@@ -59,6 +59,7 @@ class TradeEnv(Env):
         self.multiplier = multiplier
         self.time_type = time_type
         self.use_fake_data = use_fake_data
+        self._seed = seed       # 暂时没啥用
 
         # 加载数据
         self.df = self._load_data()
@@ -121,7 +122,7 @@ class TradeEnv(Env):
 
         return df
 
-    def reset(self):
+    def reset(self, *args, **kwargs):
 
         # 初始化参数
         self.truncated = False
@@ -162,13 +163,17 @@ class TradeEnv(Env):
         info = self._get_info()
 
         return observation, reward, False, self.truncated, info
-
+    
+    def seed(self, seed):
+        self._seed = seed
+    
 
 register(id="trade", entry_point="env.trade_env:TradeEnv")
 
 
 # test
 if __name__ == "__main__":
+    
     env = gym.make(id='trade', cat='AU', timestep=5, start_time='20220524', end_time='20221230',
                    stop_loss_th_init=0.0025, multiplier=500, use_fake_data=True)
     env.reset()

@@ -11,6 +11,7 @@ from tianshou.data import Batch
 from common import OPTIMIZER, LOG_PATH
 from model_zoo import MODEL_ZOO
 from policy_zoo import POLICY_ZOO
+from env.trade_env import *
 
 
 def test(args):
