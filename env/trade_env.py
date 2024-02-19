@@ -40,7 +40,7 @@ class TradeEnv(Env):
 
     metadata = {"render_modes": ["ansi"]}
 
-    def __init__(self, cat, feed_data_length, start_time, end_time, stop_loss_th_init, multiplier,
+    def __init__(self, cat, timestep, start_time, end_time, stop_loss_th_init, multiplier,
                  time_type='random'):
         super().__init__()
 
@@ -50,7 +50,7 @@ class TradeEnv(Env):
         connect(host=URI_ticks,  alias='ticks')
 
         self.cat = cat
-        self.feed_data_length = feed_data_length
+        self.timestep = timestep
         self.start_time = start_time
         self.end_time = end_time
         self.stop_loss_th_init = stop_loss_th_init
@@ -62,18 +62,18 @@ class TradeEnv(Env):
 
         # 定义space
         self.action_space = spaces.Discrete(len(Actions))
-        self.observation_shape = (feed_data_length, len(self.df.columns))
+        self.observation_shape = (timestep, len(self.df.columns))
         self.observation_space = spaces.Box(
             low=-INF, high=INF, shape=self.observation_shape, dtype=np.float32
         )
 
     def _get_observation(self):
-        return self.df.iloc[self.sel_point-self.feed_data_length:self.sel_point][SEL_COLS]
+        return self.df.iloc[self.sel_point-self.timestep:self.sel_point][SEL_COLS]
 
     def _get_info(self):
         return dict(
             cat=self.cat,
-            feed_data_length=self.feed_data_length,
+            timestep=self.timestep,
             start_time=self.start_time,
             end_time=self.end_time,
             stop_loss_th_init=self.stop_loss_th_init,
@@ -117,7 +117,7 @@ class TradeEnv(Env):
 
         # 初始化参数
         self.truncated = False
-        self.sel_point = self.feed_data_length
+        self.sel_point = self.timestep
         self.total_reward = 0
         self.mean_reward = 0
         self.max_reward = 0
@@ -161,7 +161,7 @@ register(id="trade", entry_point="env.trade_env:TradeEnv")
 
 # test
 if __name__ == "__main__":
-    env = gym.make(id='trade', cat='AU', feed_data_length=5, start_time='20220524', end_time='20221230',
+    env = gym.make(id='trade', cat='AU', timestep=5, start_time='20220524', end_time='20221230',
                    stop_loss_th_init=0.0025, multiplier=500)
     env.reset()
     while True:

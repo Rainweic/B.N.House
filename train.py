@@ -22,20 +22,20 @@ def train(args):
     config = read_config(args.c)
 
     # set state_shape、action_shape
-    tmp_env = gym.make(config.env_name)
+    tmp_env = gym.make(config.env_kwargs.__dict__)
     config.state_shape = tmp_env.observation_space.shape or tmp_env.observation_space.n
     config.action_shape = tmp_env.action_space.shape or tmp_env.action_space.n
 
     # make train/test env
     if hasattr(config, "training_num"):
-        train_envs = DummyVectorEnv([lambda: gym.make(config.env_name) for _ in range(config.training_num)])
+        train_envs = DummyVectorEnv([lambda: gym.make(config.env_kwargs.__dict__) for _ in range(config.training_num)])
     else:
-        train_envs = gym.make(config.env_name)
+        train_envs = gym.make(config.env_kwargs.__dict__)
 
     if hasattr(config, "test_num"):
-        eval_envs = SubprocVectorEnv([lambda: gym.make(config.env_name) for _ in range(config.test_num)])
+        eval_envs = SubprocVectorEnv([lambda: gym.make(config.env_kwargs.__dict__) for _ in range(config.test_num)])
     else:
-        eval_envs = gym.make(config.env_name)
+        eval_envs = gym.make(config.env_kwargs.__dict__)
 
     # set seed
     if hasattr(config, "random_seed"):
@@ -45,7 +45,14 @@ def train(args):
         eval_envs.seed(config.random_seed)
 
     # Model
-    model = MODEL_ZOO[config.model](config=config)
+    if hasattr(config, "model_kwargs"):
+        if config.model_kwargs.feature_size == "state_shape":
+            config.model_kwargs.feature_size = config.state_shape
+        if config.model_kwargs.action_shape == "action_shape":
+            config.model_kwargs.action_shape = config.action_shape
+        model = MODEL_ZOO[config.model](**config.model_kwargs.__dict__)
+    else:
+        model = MODEL_ZOO[config.model](config=config)
 
     # GPU or CPU
     use_cuda = torch.cuda.is_available()

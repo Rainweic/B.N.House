@@ -1,6 +1,21 @@
 {
-  "env_name": "trade",
-  "model": "DuelingDQN",
+  "env_kwargs": {
+    "id": "trade",
+    "cat": "AU",
+    "timestep": 5,
+    "start_time": "20220524",
+    "end_time": "20220525",
+    "stop_loss_th_init": 0.0025,
+    "multiplier": 500
+  },
+  "model": "RainBow4Trade",
+  "model_kwargs": {
+    "feature_size": "state_shape",
+    "output_size": "action_shape",
+    "timestep": 5,
+    "gru_num_layers": 2,
+    "softmax": false
+  },
   "optimizer": "Adam",
   "policy": "DQNPolicy",
   "random_seed": 0,
@@ -16,9 +31,6 @@
   "step_per_collect": 16,
   "update_per_step": 0.0625,
   "batch_size": 128,
-  "hidden_sizes": [128, 128],
-  "dueling_q_hidden_sizes": [128, 128],
-  "dueling_v_hidden_sizes": [128, 128],
   "training_num": 16,
   "test_num": 100,
   "render": 0.0
