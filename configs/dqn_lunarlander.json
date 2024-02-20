@@ -1,5 +1,7 @@
 {
-  "env_name": "LunarLander-v2",
+  "env_kwargs": {
+    "id": "LunarLander-v2"
+  },
   "model": "DuelingDQN",
   "optimizer": "Adam",
   "policy": "DQNPolicy",

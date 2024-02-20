@@ -40,40 +40,44 @@ class TradeEnv(Env):
 
     metadata = {"render_modes": ["ansi"]}
 
-    def __init__(self, cat, feed_data_length, start_time, end_time, stop_loss_th_init, multiplier,
-                 time_type='random'):
+    def __init__(self, cat, timestep, start_time, end_time, stop_loss_th_init, multiplier,
+                 time_type='random', URI_ticks='mongodb://ticks:11112222@mongodb:27017/ticks',
+                 use_fake_data=False, seed=0):
         super().__init__()
 
         # 连接数据库
-        URI_ticks = 'mongodb://ticks:11112222@mongodb:27017/ticks'
+        # URI_ticks = 'mongodb://ticks:11112222@mongodb:27017/ticks'
         # URI_kline = 'mongodb://127.0.0.1:6007/kline'
-        connect(host=URI_ticks,  alias='ticks')
+        if not use_fake_data:
+            connect(host=URI_ticks,  alias='ticks')
 
         self.cat = cat
-        self.feed_data_length = feed_data_length
+        self.timestep = timestep
         self.start_time = start_time
         self.end_time = end_time
         self.stop_loss_th_init = stop_loss_th_init
         self.multiplier = multiplier
         self.time_type = time_type
+        self.use_fake_data = use_fake_data
+        self._seed = seed       # 暂时没啥用
 
         # 加载数据
         self.df = self._load_data()
 
         # 定义space
         self.action_space = spaces.Discrete(len(Actions))
-        self.observation_shape = (feed_data_length, len(self.df.columns))
+        self.observation_shape = (timestep, len(self.df.columns))
         self.observation_space = spaces.Box(
             low=-INF, high=INF, shape=self.observation_shape, dtype=np.float32
         )
 
     def _get_observation(self):
-        return self.df.iloc[self.sel_point-self.feed_data_length:self.sel_point][SEL_COLS]
+        return self.df.iloc[self.sel_point-self.timestep:self.sel_point][SEL_COLS]
 
     def _get_info(self):
         return dict(
             cat=self.cat,
-            feed_data_length=self.feed_data_length,
+            timestep=self.timestep,
             start_time=self.start_time,
             end_time=self.end_time,
             stop_loss_th_init=self.stop_loss_th_init,
@@ -88,6 +92,11 @@ class TradeEnv(Env):
         # 根据日期选择数据
         sel_days = [datetime.strftime(x, '%Y%m%d') for x in
                     list(pd.date_range(start=self.start_time, end=self.end_time))]
+
+        if self.use_fake_data:
+            # 随机生成数据 仅用于测试
+            df = pd.DataFrame(np.random.rand(len(sel_days), len(SEL_COLS)), columns=SEL_COLS)
+            return df
 
         # 加载数据
         ticks = PickleDbTicks(dict(category=self.cat, subID='9999', day__in=sel_days), main_cls='')
@@ -113,11 +122,11 @@ class TradeEnv(Env):
 
         return df
 
-    def reset(self):
+    def reset(self, *args, **kwargs):
 
         # 初始化参数
         self.truncated = False
-        self.sel_point = self.feed_data_length
+        self.sel_point = self.timestep
         self.total_reward = 0
         self.mean_reward = 0
         self.max_reward = 0
@@ -148,26 +157,32 @@ class TradeEnv(Env):
             self.total_reward += reward
             self.mean_reward = self.total_reward / self.step_times
         else:
-            observation = None
+            observation = pd.DataFrame(data=np.zeros(shape=[self.timestep, len(SEL_COLS)]), columns=SEL_COLS)
             reward = 0
 
         info = self._get_info()
 
         return observation, reward, False, self.truncated, info
-
+    
+    def seed(self, seed):
+        self._seed = seed
+    
 
 register(id="trade", entry_point="env.trade_env:TradeEnv")
 
 
 # test
 if __name__ == "__main__":
-    env = gym.make(id='trade', cat='AU', feed_data_length=5, start_time='20220524', end_time='20221230',
-                   stop_loss_th_init=0.0025, multiplier=500)
-    env.reset()
+    
+    env = gym.make(id='trade', cat='AU', timestep=5, start_time='20220524', end_time='20221230',
+                   stop_loss_th_init=0.0025, multiplier=500, use_fake_data=True)
+    observation, info = env.reset()
     while True:
         action = env.action_space.sample()
         observation, reward, terminated, truncated, info = env.step(action)
+        print(observation.shape)
         print(f"obs: {observation}\n reward: {reward}")
 
         if terminated or truncated:
             observation, info = env.reset()
+            exit(0)

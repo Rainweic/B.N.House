@@ -15,7 +15,17 @@ git submodule update
 
 存放路径: `configs`
 
-## V0.0.1版本说明
+## V0.1.3版本说明
+
+### 接入期货模拟环境、利用GRU构建网络，可以正常训练，仅仅调通，收敛性暂未验证，后续像RainBow方向逐步优化网络结构
+
+#### 训练
+
+```bash
+python train.py -c ./configs/dqn_trade.json
+```
+
+## V0.1.1版本说明
 
 ### 运行demo 【DQN网络 登月游戏】
 
