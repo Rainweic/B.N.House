@@ -176,10 +176,11 @@ if __name__ == "__main__":
     
     env = gym.make(id='trade', cat='AU', timestep=5, start_time='20220524', end_time='20221230',
                    stop_loss_th_init=0.0025, multiplier=500, use_fake_data=True)
-    env.reset()
+    observation, info = env.reset()
     while True:
         action = env.action_space.sample()
         observation, reward, terminated, truncated, info = env.step(action)
+        print(observation.shape)
         print(f"obs: {observation}\n reward: {reward}")
 
         if terminated or truncated:
