@@ -157,7 +157,7 @@ class TradeEnv(Env):
             self.total_reward += reward
             self.mean_reward = self.total_reward / self.step_times
         else:
-            observation = None
+            observation = pd.DataFrame(data=np.zeros(shape=[self.timestep, len(SEL_COLS)]), columns=SEL_COLS)
             reward = 0
 
         info = self._get_info()
@@ -185,3 +185,4 @@ if __name__ == "__main__":
 
         if terminated or truncated:
             observation, info = env.reset()
+            exit(0)

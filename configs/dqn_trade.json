@@ -34,7 +34,7 @@
   "step_per_collect": 16,
   "update_per_step": 0.0625,
   "batch_size": 128,
-  "training_num": 1,
-  "test_num": 1,
+  "training_num": 16,
+  "test_num": 100,
   "render": 0.0
 }

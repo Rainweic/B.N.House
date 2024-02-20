@@ -81,7 +81,7 @@ def train(args):
     train_collector = Collector(
         policy,
         train_envs,
-        VectorReplayBuffer(config.buffer_size, len(train_envs) if isinstance(train_envs, SubprocVectorEnv) else 1),
+        # VectorReplayBuffer(config.buffer_size, len(train_envs) if isinstance(train_envs, SubprocVectorEnv) else 1),
         exploration_noise=True,
     )
     test_collector = Collector(policy, eval_envs, exploration_noise=True)
