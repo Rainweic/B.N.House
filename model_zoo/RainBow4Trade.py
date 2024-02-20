@@ -7,13 +7,14 @@ from torch import nn
 class RainBow4Trade(nn.Module):
 
     def __init__(self, feature_size, timestep, output_size, gru_num_layers=2,
-                 softmax=False):
+                 softmax=False, device='cpu'):
         super(RainBow4Trade, self).__init__()
 
         self.gru = nn.GRU(feature_size, timestep, num_layers=gru_num_layers, batch_first=True)
         self.fc = nn.Linear(timestep, output_size)
-
         self.softmax = softmax
+        
+        self.device = device
 
     def forward(
         self,
@@ -21,8 +22,9 @@ class RainBow4Trade(nn.Module):
         state: Any = None,
         info: Dict[str, Any] = {},
     ) -> Tuple[torch.Tensor, Any]:
-        # bug timestep咋会是2
-        print(obs.shape)
+        
+        obs = torch.as_tensor(obs, device=self.device, dtype=torch.float32)
+        
         output, _ = self.gru(obs)
         output = self.fc(output[:, -1, :])
 
@@ -34,7 +36,7 @@ class RainBow4Trade(nn.Module):
 # test the model
 if __name__ == '__main__':
 
-    bs = 100
+    bs = 1
     feature_size = 22
     timestep = 5
     output_size = 2

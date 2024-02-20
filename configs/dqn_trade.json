@@ -16,7 +16,8 @@
     "output_size": "action_shape",
     "timestep": 5,
     "gru_num_layers": 2,
-    "softmax": false
+    "softmax": false,
+    "device": "cuda"
   },
   "optimizer": "Adam",
   "policy": "DQNPolicy",

@@ -61,9 +61,8 @@ def train(args):
         model = MODEL_ZOO[config.model](config=config)
 
     # GPU or CPU
-    use_cuda = torch.cuda.is_available()
-    if use_cuda:
-        model.to("cuda")
+    device = config.model_kwargs.device
+    model.to(device)
 
     # Optimizer
     optim = OPTIMIZER[config.optimizer](model.parameters(), lr=config.lr)
