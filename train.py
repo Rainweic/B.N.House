@@ -99,7 +99,7 @@ def train(args):
         torch.save(policy.state_dict(), os.path.join(log_path, save_name))
 
     def stop_fn(mean_rewards):
-        return mean_rewards >= tmp_env.spec.reward_threshold
+        return mean_rewards >= 0
 
     def train_fn(epoch, env_step):  # exp decay
         eps = max(config.eps_train * (1 - 5e-6) ** env_step, config.eps_test)

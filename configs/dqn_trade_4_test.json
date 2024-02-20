@@ -1,0 +1,40 @@
+{
+  "env_kwargs": {
+    "id": "trade",
+    "cat": "AU",
+    "timestep": 5,
+    "start_time": "20220524",
+    "end_time": "20221230",
+    "stop_loss_th_init": 0.0025,
+    "multiplier": 500,
+    "URI_ticks": "mongodb://ticks:11112222@192.168.3.47:27017/ticks",
+    "use_fake_data": false
+  },
+  "model": "RainBow4Trade",
+  "model_kwargs": {
+    "feature_size": "state_shape",
+    "output_size": "action_shape",
+    "timestep": 5,
+    "gru_num_layers": 2,
+    "softmax": false,
+    "device": "cuda"
+  },
+  "optimizer": "Adam",
+  "policy": "DQNPolicy",
+  "random_seed": 0,
+  "eps_test": 0.01,
+  "eps_train": 0.73,
+  "buffer_size": 100000,
+  "lr": 0.013,
+  "gamma": 0.99,
+  "n_step": 4,
+  "target_update_freq": 500,
+  "epoch": 10,
+  "step_per_epoch": 80000,
+  "step_per_collect": 16,
+  "update_per_step": 0.0625,
+  "batch_size": 128,
+  "training_num": 16,
+  "test_num": 100,
+  "render": 0.0
+}
